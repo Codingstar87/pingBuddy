@@ -103,10 +103,7 @@ const logIn = async (req, res) => {
 const logOut = (req, res) => {
     try {
 
-        res.cookie("jwt", "", {maxAge : 0})
-        blacklistToken(req.cookies.jwt)
-
-        
+        res.cookie("jwt", "", {maxAge : 0})  
         res.status(200).json({message : "Logout successfully"})
     } catch (error) {
         console.log("Error in logout controller ", error.meassage)
@@ -115,9 +112,7 @@ const logOut = (req, res) => {
     
 }
 
-const blacklistToken = (token) => {
-    
-}
+
 const updateProfile = async (req, res) => {
     try {
         const { profilePic } = req.body;
