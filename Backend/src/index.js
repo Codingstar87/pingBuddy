@@ -1,6 +1,6 @@
 
 
-import {app} from "./app.js";
+import {app, server} from "./app.js";
 
 import dotenv from "dotenv" ;
 dotenv.config()
@@ -16,7 +16,7 @@ connectDatabase()
 
 const port = process.env.PORT || 5432
 
-app.listen(port,() => {
+server.listen(port,() => {
     console.log(`Server is listening on ${port}`)
 })
 

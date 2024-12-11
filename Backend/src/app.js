@@ -3,6 +3,7 @@ import express from "express" ;
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
+import path from "node:path";
 
 import { createServer } from 'node:http';
 import dotenv from "dotenv" ;
@@ -67,5 +68,12 @@ import messageRoutes from "../src/routes/message.routes.js"
 app.use("/v1/api/messages", messageRoutes)
 
 
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    });
+  }
 
 export  {app , io , server }
