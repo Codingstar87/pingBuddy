@@ -53,9 +53,6 @@ io.on('connection', (socket) => {
 
 
 
-app.use("/cart" , (req,res) => {
-    res.send("Hello c")
-})
 
 app.use(express.json({ limit: '500mb' }))
 app.use(cookieParser())
