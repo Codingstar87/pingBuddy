@@ -2,15 +2,22 @@ import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail, SquareSquare } from "lucide-react";
+
+const PASSWORD = "password";
+const OTP = "OTP";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [signInMethord, setSignInMethord] = useState(PASSWORD);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const { login, isLoggingIn } = useAuthStore();
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +58,9 @@ const LoginPage = () => {
                   className={`input input-bordered w-full pl-10`}
                   placeholder="you@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -69,7 +78,9 @@ const LoginPage = () => {
                   className={`input input-bordered w-full pl-10`}
                   placeholder=""
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                 />
                 <button
                   type="button"
@@ -85,7 +96,11 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isLoggingIn}>
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isLoggingIn}
+            >
               {isLoggingIn ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -94,6 +109,19 @@ const LoginPage = () => {
               ) : (
                 "Sign in"
               )}
+            </button>
+            <div className="text-center">
+              <p className="text-base-content/60">or</p>
+            </div>
+
+            <button
+              className="btn btn-primary w-full"
+              disabled={isLoggingIn}
+              onClick={() => {
+                navigate("/login-with-otp");
+              }}
+            >
+              {"Sign in with OTP"}
             </button>
           </form>
 
@@ -111,7 +139,9 @@ const LoginPage = () => {
       {/* Right Side - Image/Pattern */}
       <AuthImagePattern
         title={"Welcome back!"}
-        subtitle={"Sign in to continue your conversations and catch up with your messages."}
+        subtitle={
+          "Sign in to continue your conversations and catch up with your messages."
+        }
       />
     </div>
   );
