@@ -1,49 +1,33 @@
 import nodemailer from "nodemailer" ;
 
+const sendVerificationEmail = async (email, otp) => {
+    try {
+        
+        const transporter = nodemailer.createTransport({
+            service: "gmail", 
+            auth: {
+                user: process.env.EMAIL_USER, 
+                pass: process.env.EMAIL_PASS, 
+            },
+        });
 
-import dotenv from "dotenv" ;
-dotenv.config()
+        const mailOptions = {
+            from: process.env.EMAIL_USER, 
+            to: email, 
+            subject: "Your OTP for Password Reset",
+            text: `Your OTP for resetting your password is: ${otp}.\n\nThis OTP will expire in 2 minutes. Please do not share it with anyone.`,
+            html: `<p>Your OTP for resetting your password is: <b>${otp}</b>.</p><p>This OTP will expire in 2 minutes. Please do not share it with anyone.</p>`,
+        };
 
-const generateOTP = () => {
-    const otp = Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit OTP
-    return otp;
-  };
-
-const sendVerificationEmail = async (email, token) => {
-
-    const otp = generateOTP();
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        secure : true,
-        port: 465,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // const verificationLink = `${process.env.BASE_URL}/api/auth/verify/${token}`;
-
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,  // The recipient's email address
-        subject: 'Your OTP for email verification',
-        text: `Your one-time OTP for email verification is: ${otp}`,
-      };
-
-      try {
-        // Send the email with OTP
+        // Send email
         await transporter.sendMail(mailOptions);
-        console.log('OTP sent successfully');
-        return otp; // Return OTP to be stored for verification
-      } catch (error) {
-        console.error('Error sending OTP:', error);
-        throw new Error('Error sending OTP');
-      }
-
-
+        console.log("OTP email sent successfully");
+    } catch (error) {
+        console.error("Error sending email:", error);
+        throw new Error("Failed to send OTP email");
+    }
 };
 
 
-export { sendVerificationEmail , generateOTP};
+
+export { sendVerificationEmail };

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs" ;
 import generateToken from "../utils/utils.js";
 import cloudinary from "../lib/cloudinary.js";
 import OTP from "../models/mail.models.js";
-import { generateOTP, sendVerificationEmail } from "../mail/nodemailer.js";
+import {  sendVerificationEmail } from "../mail/nodemailer.js";
 
 const signUp = async(req,res) => {
     const {email,userName,password} = req.body
@@ -101,28 +101,34 @@ const logIn = async (req, res) => {
     }
 };
 
+
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+};
+
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
 
-        // Check if the user exists
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: "User does not exist" });
         }
 
-        // Generate OTP and set expiration time
-        const otp = generateOTP();
-        const expiresAt = Date.now() + 2 * 60 * 1000; // OTP expires in 2 minutes
+        const otp = generateOTP(); 
+        const expiresAt = Date.now() + 2 * 60 * 1000; 
 
-        // Save the OTP in the database
-        await OTP.findOneAndUpdate(
+        const updatedOTP = await OTP.findOneAndUpdate(
             { email },
             { otp, expiresAt },
             { upsert: true, new: true }
         );
 
-        // Send OTP via email
+        if (updatedOTP.otp !== otp) {
+            console.error("Mismatch in OTP stored and generated");
+            return res.status(500).json({ message: "Error generating OTP" });
+        }
+
         await sendVerificationEmail(email, otp);
 
         return res.status(200).json({ message: "OTP sent successfully" });
@@ -132,18 +138,16 @@ const forgotPassword = async (req, res) => {
     }
 };
 
-// Controller to verify OTP and generate token
+
 const verifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
 
-        // Check if the user exists
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: "User does not exist" });
         }
 
-        // Find the OTP record for the email
         const record = await OTP.findOne({ email });
         if (!record) {
             return res.status(400).json({ message: "OTP not found. Please request a new OTP." });
@@ -151,21 +155,17 @@ const verifyOTP = async (req, res) => {
 
         const { otp: storedOtp, expiresAt } = record;
 
-        // Check if the OTP has expired
         if (Date.now() > expiresAt) {
             await OTP.deleteOne({ email });
             return res.status(400).json({ message: "OTP has expired. Please request a new OTP." });
         }
 
-        // Check if the OTP matches
         if (storedOtp !== otp) {
             return res.status(400).json({ message: "Invalid OTP. Please try again." });
         }
 
-        // OTP is valid, generate token
         const token = generateToken(user._id ,res);
 
-        // Delete the OTP record after successful verification
         await OTP.deleteOne({ email });
 
         return res.status(200).json({
