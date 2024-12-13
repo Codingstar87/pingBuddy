@@ -62,7 +62,6 @@ const logIn = async (req, res) => {
     const maxAttempts = 3;
 
     try {
-        // Track retry attempts
         if (!retryAttempts[email]) retryAttempts[email] = 0;
         if (retryAttempts[email] >= maxAttempts) {
             return res.status(429).json({
@@ -85,7 +84,6 @@ const logIn = async (req, res) => {
             });
         }
 
-        // Reset retry count on successful login
         delete retryAttempts[email];
 
         generateToken(user._id, res);
@@ -103,7 +101,7 @@ const logIn = async (req, res) => {
 
 
 const generateOTP = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    return Math.floor(100000 + Math.random() * 900000).toString(); 
 };
 
 const forgotPassword = async (req, res) => {
