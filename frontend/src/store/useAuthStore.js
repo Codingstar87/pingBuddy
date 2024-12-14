@@ -28,6 +28,36 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  generateOTP: async (data) => {
+    set({ isSigningUp: true });cd
+    try {
+      const res = await axiosInstance.post("/auth/forgot-password", data);
+      // set({ authUser: res.data });
+      toast.success("OTP Generated successfully");
+      // get().connectSocket();
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isSigningUp: false });
+    }
+  },
+
+  VerifyOTP: async (data) => {
+    set({ isSigningUp: true });
+    try {
+      const res = await axiosInstance.post("/auth/verify-otp", data);
+      set({ authUser: res.data });
+      toast.success("OTP Verified successfully");
+      toast.success("Login successfully");
+      get().connectSocket();
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isSigningUp: false });
+    }
+  },
+  
+
   signup: async (data) => {
     set({ isSigningUp: true });
     try {

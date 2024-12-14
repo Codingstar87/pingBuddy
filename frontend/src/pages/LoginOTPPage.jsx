@@ -160,10 +160,6 @@
 // };
 // export default LoginWithOTPPage;
 
-
-
-
-
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
@@ -184,22 +180,26 @@ const LoginWithOTPPage = () => {
   });
   const [resendCooldown, setResendCooldown] = useState(false);
   const [resendTimer, setResendTimer] = useState(30); // Cooldown period in seconds
-  const { login, isLoggingIn } = useAuthStore();
+  const { login, isLoggingIn, generateOTP, VerifyOTP } = useAuthStore();
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (stateOfOTPVerification === SEND_OTP) {
-      // Send OTP logic
-      console.log("data",formData)
+      generateOTP({
+        email: formData.email,
+      });
+      console.log("data", formData);
       setStateOfOTPVerification(VERIFY_OTP);
       startResendCooldown();
       toast.success("OTP sent successfully");
     } else if (stateOfOTPVerification === VERIFY_OTP) {
-      // Verify OTP logic
-      // If OTP is valid
-      console.log("data",formData)
+      VerifyOTP({
+        email: formData.email,
+        otp: formData.otp,
+      });
+      console.log("data", formData);
       toast.success("Login successful");
       navigate("/home");
       // else
