@@ -28,34 +28,83 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  generateOTP: async (data) => {
-    set({ isSigningUp: true });cd
+  // generateOTP: async (data) => {
+  //   set({ isSigningUp: true });cd
+  //   try {
+  //     const res = await axiosInstance.post("/auth/forgot-password", data);
+  //     // set({ authUser: res.data });
+  //     toast.success("OTP Generated successfully");
+  //     // get().connectSocket();
+  //   } catch (error) {
+  //     toast.error(error.response.data.message);
+  //   } finally {
+  //     set({ isSigningUp: false });
+  //   }
+  // },
+
+
+  generateOTP: async (data, onSuccess) => {
+    set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/forgot-password", data);
-      // set({ authUser: res.data });
-      toast.success("OTP Generated successfully");
-      // get().connectSocket();
+      onSuccess()
+      toast.success("OTP Generated successfully. Please check your email.");
     } catch (error) {
-      toast.error(error.response.data.message);
+      // Handle specific and generic errors
+      if (error.response) {
+        toast.error(error.response.data.message || "Failed to generate OTP. Please try again.");
+      } else if (error.request) {
+        toast.error("No response from the server. Please check your internet connection.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      console.error("Error in generateOTP:", error);
     } finally {
       set({ isSigningUp: false });
     }
   },
 
-  VerifyOTP: async (data) => {
+  // VerifyOTP: async (data) => {
+  //   set({ isSigningUp: true });
+  //   try {
+  //     const res = await axiosInstance.post("/auth/verify-otp", data);
+  //     set({ authUser: res.data });
+  //     toast.success("OTP Verified successfully");
+  //     toast.success("Login successfully");
+  //     get().connectSocket();
+  //   } catch (error) {
+  //     console.log("error sending otp");
+  //     toast.error(error.response.data.message);
+  //   } finally {
+  //     set({ isSigningUp: false });
+  //   }
+  // },
+
+
+  VerifyOTP: async (data, onSuccess) => {
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/verify-otp", data);
       set({ authUser: res.data });
-      toast.success("OTP Verified successfully");
-      toast.success("Login successfully");
+      toast.success("OTP Verified successfully.");
+      toast.success("Login successful!");
       get().connectSocket();
+      onSuccess();
     } catch (error) {
-      toast.error(error.response.data.message);
+      // Handle specific and generic errors
+      if (error.response) {
+        toast.error(error.response.data.message || "Failed to verify OTP. Please try again.");
+      } else if (error.request) {
+        toast.error("No response from the server. Please check your internet connection.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      console.error("Error in VerifyOTP:", error);
     } finally {
       set({ isSigningUp: false });
     }
   },
+  
   
 
   signup: async (data) => {

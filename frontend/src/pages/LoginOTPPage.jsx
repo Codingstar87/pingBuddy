@@ -180,30 +180,55 @@ const LoginWithOTPPage = () => {
   });
   const [resendCooldown, setResendCooldown] = useState(false);
   const [resendTimer, setResendTimer] = useState(30); // Cooldown period in seconds
-  const { login, isLoggingIn, generateOTP, VerifyOTP } = useAuthStore();
+  const { login, isLoggingIn,isSigningUp, generateOTP, VerifyOTP } = useAuthStore();
 
   const navigate = useNavigate();
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (stateOfOTPVerification === SEND_OTP) {
+  //     generateOTP({
+  //       email: formData.email,
+  //     });
+  //     console.log("data", formData);
+  //     setStateOfOTPVerification(VERIFY_OTP);
+  //     // startResendCooldown();
+  //     // toast.success("OTP sent successfully");
+  //   } else if (stateOfOTPVerification === VERIFY_OTP) {
+  //     VerifyOTP({
+  //       email: formData.email,
+  //       otp: formData.otp,
+  //     });
+  //     // console.log("data", formData);
+  //     // toast.success("Login successful");
+  //     navigate("/home");
+  //     // else
+  //     // toast.error("Invalid OTP");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (stateOfOTPVerification === SEND_OTP) {
-      generateOTP({
-        email: formData.email,
-      });
-      console.log("data", formData);
-      setStateOfOTPVerification(VERIFY_OTP);
-      startResendCooldown();
-      toast.success("OTP sent successfully");
-    } else if (stateOfOTPVerification === VERIFY_OTP) {
-      VerifyOTP({
-        email: formData.email,
-        otp: formData.otp,
-      });
-      console.log("data", formData);
-      toast.success("Login successful");
-      navigate("/home");
-      // else
-      // toast.error("Invalid OTP");
+    try {
+      if (stateOfOTPVerification === SEND_OTP) {
+        const onSuccess = () => {
+          setStateOfOTPVerification(VERIFY_OTP);
+        };
+        await generateOTP({ email: formData.email }, onSuccess);
+        console.log("data", formData);
+      } else if (stateOfOTPVerification === VERIFY_OTP) {
+        const onSuccess = () => {
+          navigate("/home");
+        };
+
+        await VerifyOTP(
+          { email: formData.email, otp: formData.otp },
+          onSuccess
+        );
+      }
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+      toast.error("An error occurred while processing your request.");
     }
   };
 
@@ -312,9 +337,9 @@ const LoginWithOTPPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-              disabled={isLoggingIn}
+              disabled={isSigningUp}
             >
-              {isLoggingIn ? (
+              {isSigningUp ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Loading...
@@ -329,7 +354,7 @@ const LoginWithOTPPage = () => {
 
             <button
               className="btn btn-primary w-full"
-              disabled={isLoggingIn}
+              disabled={isSigningUp}
               onClick={() => {
                 navigate("/login");
               }}
