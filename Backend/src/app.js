@@ -13,7 +13,7 @@ const app = express()
 
 
 app.use(cors({
-    origin :  process.env.CORS_ORIGIN || "*",
+    origin :  "https://ping-buddy-yze1.vercel.app",
     credentials : true
 }))
 
@@ -23,7 +23,7 @@ app.use(cors({
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "*",  
+    origin: ["https://ping-buddy-yze1.vercel.app"],  
     credentials: true
   }
 });
