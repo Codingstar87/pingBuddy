@@ -23,7 +23,7 @@ app.use(cors({
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://ping-buddy-yze1.vercel.app"] || "*",  
+    origin: ["https://ping-buddy-yze1.vercel.app"] ,  
     credentials: true
   }
 });
