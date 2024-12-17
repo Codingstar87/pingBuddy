@@ -14,7 +14,7 @@ const app = express()
 
 app.use(cors({
     // origin :  "https://ping-buddy-yze1.vercel.app" ,
-    origin :  ['https://ping-buddy.vercel.app', 'http://localhost:5173'  ] ,
+    origin :  ['https://ping-buddy.vercel.app', 'http://localhost:5173'] ,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials : true
 }))
@@ -26,7 +26,7 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     // origin: ["https://ping-buddy-yze1.vercel.app"] ,  
-    origin :  ['https://ping-buddy.vercel.app', 'http://localhost:5173', "*"] ,
+    origin :  ['https://ping-buddy.vercel.app', 'http://localhost:5173'] ,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials : true
   }
